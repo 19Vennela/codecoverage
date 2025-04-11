@@ -1,0 +1,52 @@
+import unittest
+from codecoverage import (
+    allergy_data,
+    add_allergen,
+    log_food,
+    check_latest_food
+)
+
+class TestAllergyTracker(unittest.TestCase):
+
+    def setUp(self):
+        # Reset the allergy_data before each test
+        allergy_data["allergens"] = []
+        allergy_data["food_log"] = []
+
+    def test_add_allergen(self):
+        add_allergen("Peanuts")
+        self.assertIn("peanuts", allergy_data["allergens"])
+        # Try adding the same allergen again
+        add_allergen("Peanuts")
+        self.assertEqual(allergy_data["allergens"].count("peanuts"), 1)
+
+    def test_check_latest_food_with_allergen(self):
+        add_allergen("Peanuts")
+        log_food("Trail Mix", ["Raisins", "Peanuts", "Chocolate"])
+        
+        from io import StringIO
+        import sys
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        check_latest_food()
+
+        sys.stdout = sys.__stdout__
+        self.assertIn("🚨 ALERT", captured_output.getvalue())
+
+    def test_check_latest_food_without_allergen(self):
+        add_allergen("Shellfish")
+        log_food("Veg Biryani", ["Rice", "Carrots", "Beans"])
+
+        from io import StringIO
+        import sys
+        captured_output = StringIO()
+        sys.stdout = captured_output
+
+        check_latest_food()
+
+        sys.stdout = sys.__stdout__
+        self.assertIn("✅", captured_output.getvalue())
+
+if __name__ == "__main__":
+    unittest.main()
