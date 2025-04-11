@@ -1,0 +1,53 @@
+# Food Allergy Tracker
+
+# Global dictionary to hold user allergy data
+allergy_data = {
+    "allergens": [],
+    "food_log": []
+}
+
+# Function to add a known allergen
+def add_allergen(allergen):
+    if allergen.lower() not in allergy_data["allergens"]:
+        allergy_data["allergens"].append(allergen.lower())
+        print(f"⚠️ Allergen '{allergen}' added to your list.")
+    else:
+        print(f"ℹ️ You already added '{allergen}'.")
+
+# Function to log food consumed
+def log_food(food_item, ingredients):
+    allergy_data["food_log"].append({"food": food_item, "ingredients": ingredients})
+    print(f"🍽️ Logged '{food_item}' with ingredients: {', '.join(ingredients)}")
+
+# Function to check the latest food for allergens
+def check_latest_food():
+    if not allergy_data["food_log"]:
+        print("❗No food logged yet.")
+        return
+    latest = allergy_data["food_log"][-1]
+    allergens_found = [item for item in latest["ingredients"] if item.lower() in allergy_data["allergens"]]
+    if allergens_found:
+        print(f"🚨 ALERT: '{latest['food']}' contains allergens: {', '.join(allergens_found)}")
+    else:
+        print(f"✅ '{latest['food']}' is safe based on your allergen list.")
+
+# Function to show full allergy log
+def show_summary():
+    print("\n📋 Allergy Summary:")
+    print(f"Known Allergens: {', '.join(allergy_data['allergens']) if allergy_data['allergens'] else 'None'}")
+    print("Food Log:")
+    for entry in allergy_data["food_log"]:
+        print(f"  - {entry['food']}: {', '.join(entry['ingredients'])}")
+    print("🔎 Run 'check_latest_food()' after each log to check for allergens.\n")
+
+# Example usage
+add_allergen("Peanuts")
+add_allergen("Shellfish")
+
+log_food("Pad Thai", ["Noodles", "Tofu", "Peanuts", "Bean Sprouts"])
+check_latest_food()
+
+log_food("Fruit Salad", ["Apple", "Banana", "Orange"])
+check_latest_food()
+
+show_summary()
